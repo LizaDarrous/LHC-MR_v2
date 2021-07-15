@@ -9,4 +9,7 @@ sequencing data https://drive.google.com/file/d/1uua6zIournPvcJAs-QVWs8pTUVLtZ5Y
 - 'LD_GM2_2prm.txt' Local LD for each genotyped SNP, this file contains the pi and sigma values needed 
 LINK
 
-- genomicSEM files needed to calculate the cross trait intercept obtained from LDSC run using genomicSEM
+- ld and hm3 files needed to calculate the cross trait intercept obtained from LDSC run using the genomicSEM R package
+LD files: `eur_w_ld_chr` folder found in https://utexas.box.com/s/vkd36n197m8klbaio3yzoxsee6sxo11v
+hm3 files: you can get (and unzip) the comeplete HAPMAP3 SNPs here https://data.broadinstitute.org/alkesgroup/LDSCORE/w_hm3.snplist.bz2 (with MHC region)
+Or get a 'cleaned' version without the MHC region here https://utexas.box.com/s/vkd36n197m8klbaio3yzoxsee6sxo11v
