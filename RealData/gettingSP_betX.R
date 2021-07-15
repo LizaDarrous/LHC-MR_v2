@@ -1,21 +1,14 @@
 ## Per trait, getting the polygencity, direct heratibility and trait intercept (iX)
 
-#library(psych)
 library(data.table)
 library(rslurm)
 library(stringr)
 library(tidyverse)
 
 args <- commandArgs(trailingOnly = TRUE)
-Gdir <- as.character(args[1])
-EXPdir <- as.character(args[2])
-trait <- as.character(args[3])
-#partition <- as.character(args[4]) ### Boolean, change to false if complete model was already ran.
-
-#Gdir = "/data/sgg3/liza/SEM_Realv2/data"
-#EXPdir = "/data/sgg3/liza/SEM_Realv2/data/BMI_uniq.tsv"
-#trait = "BMI"
-#partition = "cluster2"
+Ddir <- as.character(args[1])
+EXPdata <- as.character(args[2]) #trait file
+trait <- as.character(args[3])  #trait name
 
 ### updated function from rslurm that checks if slurm jobs are still running on cluster
 get_job_status <- function (slr_job) 
@@ -39,12 +32,12 @@ get_job_status <- function (slr_job)
   return(res)
 }
 
-grand_dir=Gdir ### Directory specific to data
+grand_dir=Ddir ### Directory specific to data
 #Should contain the summary stat files
 setwd(grand_dir)
-Xfile = fread(EXPdir) ### Exposure file if non-UKBB (overlapping SNPs between EXP-OUT)
+Xfile = fread(EXPdata) ### Exposure file if non-UKBB (overlapping SNPs between EXP-OUT)
 
-LDfile = fread("/data/sgg3/liza/SEM_Realv2/data/LDscores.txt", sep="\t", header=TRUE)
+LDfile = fread("/project/data/LDscores.txt", sep="\t", header=TRUE)
 ## Extract SNPs high-quality SNPs, defined as being present in both UK10K and UK Biobank, having MAF>1 in both data sets,
 #info>0.99 in the UK Biobank, non-significant (P_{diff}>0.05) allele frequency difference between UK Biobank and UK10K and
 #residing outside the HLA region (chr6:28.5-33.5Mb)
@@ -55,7 +48,7 @@ selF = which(info>.99 & abs(mafUK10K-mafUKBB)<(2*sqrt(1/4e3+1/360e3)) & mafUKBB>
 LDfile = LDfile[selF,]
 
 ### get pi1 and sigma1 and SNPs in common
-rho_file = fread("/data/sgg2/zoltan/project/Project_SEM/results/LD_GM2_2prm.txt", header=FALSE)
+rho_file = fread("/project/data/LD_GM2_2prm.txt", header=FALSE)
 colnames(rho_file) = c("rsid", "chr", "pos", "piK", "sigK")
 
 Xfile %>% arrange(chr, pos) -> X_data
@@ -85,8 +78,7 @@ weights = Data_filtered$weight
 pi1 = Data_filtered$piK
 sig1 = Data_filtered$sigK
 
-betX = bX #cbind(bX, bY)  # used directly in LHC_SEM as a global parameter
-# BE CAREFUL, then, if you modify it in LHC_SEM, it will be definetively changed???
+betX = bX 
 m0 = (2500*2)+1
 M = 10106833  #Number of SNPs
 
@@ -100,10 +92,7 @@ colnames(sp_mat)=colnames(para)
 
 ### likelihood function
 run_optim_noHess = function(par){
-  source("/data/sgg3/liza/SEM_Realv2/scripts/LHC_MR_betX_v9_LD.R")
-  
-  #theta= sp_mat[1,]
-  #LHC_MR_betX_v9_LD(theta,betX,pi1,sig1,weights,m0,nX,bn=2^7,bins=10)
+  source("/data/sgg3/liza/SEM_Realv2/scripts/LHC_MR_betX_v9_LD.R") # likelihood function for single trait
   
   theta=unlist(par)
   test = optim(theta, LHC_MR_betX_v9_LD,
@@ -124,9 +113,8 @@ par.df = data.frame(par=I(apply(sp_mat,1,as.list))) #generate a dataframe of lis
 
 start.time <- Sys.time()
 sjob = slurm_apply(f = run_optim_noHess, params = par.df, jobname = paste0("SP_",trait), nodes = 100, cpus_per_node = 1,
-                   #libPaths = c(.libPaths(), "/data/sgg2/ninon/bin/R-3.4.3_Packages/"),
                    add_objects = c("betX","pi1","sig1","weights","m0","nX"),
-                   slurm_options = list(partition = "sgg"), # , `cpus-per-task`=4 #note: partition X is representative of a single partition in cluster.
+                   slurm_options = list(partition = "sgg"),
                    submit = TRUE)
 #Keep a loop open till the job is completely done.
 wait_counter = 0
@@ -144,8 +132,6 @@ time.taken <- end.time - start.time
 print(time.taken)
 
 value.mat = get_slurm_out(sjob, outtype = 'table')
-#res = cbind(sp_mat,value.mat)
-#write.table(res, file = paste0(trait,"_SP_detailed.csv"), sep = ",", quote = FALSE, col.names = TRUE, row.names = FALSE)
 
 res_min = value.mat[which(value.mat$mLL == min(value.mat$mLL)), ]
 res = cbind(trait,abs(res_min[2:4]))
