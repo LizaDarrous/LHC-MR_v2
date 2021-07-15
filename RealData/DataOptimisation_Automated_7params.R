@@ -37,7 +37,7 @@ get_job_status <- function (slr_job){
 
 ### likelihood function
 run_optim_Hess = function(par){
-  source("/data/sgg3/liza/SEM_Realv2/scripts/LHC_MR_bXY_v91_LD.R")
+  source("/project/scripts/LHC_MR_bXY_v91_LD.R") ## likelihood function
   theta=unlist(par)
   
   test = optim(theta, LHC_MR_bXY_v91_LD,
@@ -152,7 +152,7 @@ m0 = (2500*2)+1
 #M = 10106833  #Number of SNPs
 
 ### get starting points + generate the rest
-betX_df=fread("/project/data/SingleTrait_SP.csv") ## Estimates of pi, h2, and iX from SingleTrait analysis
+betX_df=fread("/project/data/SingleTrait_SP.csv") ## Estimates of pi, h2, and iX from SingleTrait analysis (gettingSP_betX.R)
 colnames(betX_df)=c("Trait","piX","h2X","iX")
 i_X = unlist(betX_df[betX_df$Trait==EXP,"iX"])
 i_Y = unlist(betX_df[betX_df$Trait==OUT,"iX"])
@@ -228,7 +228,7 @@ cleanup_files(sjob)
 #### block JK
 ### likelihood function
 run_optim_Hess_JK = function(par,start_ind, end_ind){
-  source("/data/sgg3/liza/SEM_Realv2/scripts/LHC_MR_bXY_v91_LD.R")
+  source("/project/scripts/LHC_MR_bXY_v91_LD.R")
    
   theta=unlist(par)
   
