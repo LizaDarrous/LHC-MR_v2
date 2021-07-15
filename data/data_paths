@@ -7,7 +7,7 @@ https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/annotations/variant
 sequencing data https://drive.google.com/file/d/1uua6zIournPvcJAs-QVWs8pTUVLtZ5Ym/view?usp=sharing where the list of SNPs are optimised for UKB-based summary stats (e.g. by Neale)
 
 - 'LD_GM2_2prm.txt' Local LD for each genotyped SNP, this file contains the pi and sigma values needed 
-LINK
+https://drive.google.com/file/d/1jN0N9VOnvrenBcb0cHxMzLJxi06D87jZ/view?usp=sharing
 
 - ld and hm3 files needed to calculate the cross trait intercept obtained from LDSC run using the genomicSEM R package
 LD files: `eur_w_ld_chr` folder found in https://utexas.box.com/s/vkd36n197m8klbaio3yzoxsee6sxo11v
