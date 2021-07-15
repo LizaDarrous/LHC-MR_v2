@@ -6,15 +6,15 @@ library(dplyr)
 library(DescTools)
 
 args <- commandArgs(trailingOnly = TRUE)
-Xf <- as.character(args[1])
-trait <- as.character(args[2])
+Xdata <- as.character(args[1]) #raw GWAS summary stats of trait (Neale's data)
+trait <- as.character(args[2]) #trait name
 
-setwd("/data/sgg3/liza/SEM_Realv2/data")
+setwd("/project/data")
 
 #LD scores and regression weights found in this file were computed based on 3781 individuals from the UK10K study.
 #For the LD score calculation, squared correlations were computed between the target SNP and all sequence variants within its 2 Mb neighbourhood 
 #with MAF>=0.5 (in the UK10K). For the regression weight calculation, we restricted the neighbouring variants to those part of the 4'650'107 well-imputed SNPs.
-LDfile=fread("/data/sgg3/liza/SEM_Realv2/data/LDscores.txt", sep="\t", header=TRUE)
+LDfile=fread("/project/data/LDscores.txt", sep="\t", header=TRUE)
 
 ## Extract SNPs high-quality SNPs, defined as being present in both UK10K and UK Biobank, having MAF>1 in both data sets, 
 #info>0.99 in the UK Biobank, non-significant (P_{diff}>0.05) allele frequency difference between UK Biobank and UK10K and 
@@ -24,12 +24,12 @@ mafT = .005
 selF = which(info>.99 & abs(mafUK10K-mafUKBB)<(2*sqrt(1/4e3+1/360e3)) & mafUKBB>mafT & mafUK10K>mafT & 
                !(chr==6 & pos>=28.5e6 & pos<=33.5e6))
 
-Xfile = fread(cmd = paste0(" zcat < ", Xf), header=TRUE) ## Summary statistics file, shoudl be repeated for each trait.
+Xfile = fread(cmd = paste0(" zcat < ", Xdata), header=TRUE) ## Summary statistics file, shoudl be repeated for each trait.
 #Xfile = fread(cmd = " zcat < /data/sgg2/liza/SEM_Real/test/data/845.gwas.imputed_v3.both_sexes.tsv.bgz", header=TRUE) ## SEdu
 #Xfile = fread(cmd = " zcat < /data/sgg2/liza/SEM_Real/test/data/4080_irnt.gwas.imputed_v3.both_sexes.tsv.bgz", header=TRUE) ## SBP
 #Xfile = fread(cmd = " zcat < /data/sgg2/liza/SEM_Real/test/data/2443.gwas.imputed_v3.both_sexes.tsv.bgz", header=TRUE) ## DM
 
-VARinfo = fread(cmd = " zcat < /data/sgg3/liza/SEM_Realv2/data/variants.tsv.bgz", sep="\t", header=TRUE) ## Variant info file from UKBB GWAS Imputed v3 - File Manifest Release 20180731
+VARinfo = fread(cmd = " zcat < /project/data/variants.tsv.bgz", sep="\t", header=TRUE) ## Variant info file from UKBB GWAS Imputed v3 - File Manifest Release 20180731
 
 ## Rename/add columns
 Xfile1 = inner_join(Xfile, VARinfo[,c(1:6)]) #Joining, by = "variant"
