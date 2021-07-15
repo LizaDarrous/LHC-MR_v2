@@ -1,9 +1,8 @@
 gettingSP_ldscMR = function(Data,EXP,OUT,do_ldsc=FALSE){
-  ## edit to give the directory of the genomicSEM data
   library(TwoSampleMR)
   library(GenomicSEM)
   
-  file_output = paste0(EXP,"-",OUT,"_MR-SP1.csv")
+  file_output = paste0(EXP,"-",OUT,"_MR-SP.csv")
   
   nX = mean(Data$n_complete_samples.x)  #Get sample size for trait X
   nY = mean(Data$n_complete_samples.y)  #Get sample size for trait Y
@@ -32,18 +31,18 @@ gettingSP_ldscMR = function(Data,EXP,OUT,do_ldsc=FALSE){
     ## First you need to "munge" (pre-process, align ...) the data:
     # the GWAS.tsv files should be in the folder
     munge( paste0(EXP, "_GWAS.txt"), 
-           "/data/sgg3/liza/genomicSEM/data/w_hm3.noMHC.snplist",
+           "/project/data/genomicSEM/data/w_hm3.noMHC.snplist",
            trait.names=EXP,
            N=nX) 
     munge( paste0(OUT, "_GWAS.txt"), 
-           "/data/sgg3/liza/genomicSEM/data/w_hm3.noMHC.snplist",
+           "/project/data/genomicSEM/data/w_hm3.noMHC.snplist",
            trait.names=OUT,
            N=nY) 
     traits <- c(paste0(EXP, ".sumstats.gz"),paste0(OUT, ".sumstats.gz"))
     sample.prev <- c(NA,NA) # continuous traits
     population.prev <- c(NA,NA) # continuous traits
-    ld<-"/data/sgg3/liza/genomicSEM/data/eur_w_ld_chr/"
-    wld <- "/data/sgg3/liza/genomicSEM/data/eur_w_ld_chr/"
+    ld<-"/project/data/genomicSEM/data/eur_w_ld_chr/"
+    wld <- "/project/data/genomicSEM/data/eur_w_ld_chr/"
     trait.names<-c("GWAS1", "GWAS2")
     LDSCoutput <- ldsc(traits, 
                        sample.prev, 
@@ -65,7 +64,6 @@ gettingSP_ldscMR = function(Data,EXP,OUT,do_ldsc=FALSE){
   
   ## Get significant SNPs above certain Z-statistic corresponding to set p-value
   prune_X = function(zX,p_limit=1e-5){
-    zX=zX
     z_limit=abs(qnorm(0.5*p_limit))
     ind_keep=which(abs(zX)>z_limit)
     ind_keep=unique(ind_keep)
@@ -172,12 +170,6 @@ gettingSP_ldscMR = function(Data,EXP,OUT,do_ldsc=FALSE){
   plei <- mr_pleiotropy_test(dat)
   
   # Perform MR
-  #if (tryCatch(length(res1 <- mr(dat))<1, warning = function(w){FALSE},
-  #             error = function(e){FALSE})) {
-  #  res1 <- mr(dat, method_list=c("mr_egger_regression","mr_weighted_median","mr_ivw") )
-  #} else{
-  #  res1 <- mr(dat)
-  #}
   smaller=FALSE
   tryCatch( {res1 <- mr(dat); print("Bigger MR list") }, error = function(e) {smaller<<-TRUE})
   if(smaller){
@@ -267,13 +259,6 @@ gettingSP_ldscMR = function(Data,EXP,OUT,do_ldsc=FALSE){
   plei <- mr_pleiotropy_test(dat)
   
   # Perform MR
-  #if (tryCatch(length(res2 <- mr(dat))<1, warning = function(w){FALSE},
-  #             error = function(e){FALSE})) {
-  #  res2 <- mr(dat, method_list=c("mr_egger_regression","mr_weighted_median","mr_ivw") )
-  #} else{
-  #  res2 <- mr(dat)
-  #}
-  
   smaller=FALSE
   tryCatch( {res2 <- mr(dat); print("Bigger MR list") }, error = function(e) {smaller<<-TRUE})
   if(smaller){
