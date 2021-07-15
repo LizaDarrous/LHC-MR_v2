@@ -12,9 +12,7 @@ LHC-MR extends the standard Mendelian Randomisation model to incorporate the pre
 The source code for LHC-MR was written in R version 4.0.2. No other language is used in the computation, and thus only bash and R are needed. 
 Several R-packages are needed to run the analysis, which will be detailed below.
 
-
-### Association Summary Statistics
-#### Prerequisites
+### Prerequisites
 R Packages needed to run the summary stat analysis include:
 ``` 
 install.packages(data.table);  library(data.table)
@@ -48,6 +46,10 @@ project --|---- data
           |---- results
 
 ```
+There are 3 main steps to performing LHC-MR, the scripts used for each step will be described below.
+
+### Step 1 : Pre-process summary statistics
+
 Raw summary stat files downloaded in `data` require certain columns to continue with analysis: rsid, EffectAllele/A1/alt, OtherAllele/A2/ref, number of samples (effective sample size), beta/effect size of effective allele,
 se/standard error of effect size.
 
@@ -58,11 +60,15 @@ For LD scores you can either use the classical ones (https://data.broadinstitute
 Then for these set of SNPs, it uses the [`variants.tsv.bgz`](https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/annotations/variants.tsv.bgz) obtained from Neale's [UKBB GWAS Imputed v3](https://docs.google.com/spreadsheets/d/1kvPoupSzsSFBNSztMzl04xMoSC3Kcx3CrjVf4yBmESU/edit?ts=5b5f17db#gid=178908679) to merge variant information to variant details of the summary statistics files. This leads to the addition of the A1 and A2 columns as well as the rsid, all of which are needed for further analysis. Some duplication occurs when `variants.tsv.bgz` is merged with UKBB summary stat files, which is handled in the script.
 This script is used once per UKBB trait, allowing all the traits to then have the same set of overlapping SNPs when running trait pair analysis between UKBB traits. 
 
+### Step 2 : Obtain single trait parameters
+
 Following this step, a single trait LHC-MR analysis is ran using the script `gettingSP_betX.R` to obtain values for the poligencity and single trait intercept, from which starting points will be derived in the pair trait analysis. This can be run for all traits you wish to analyse and will store these values in a file written in the `data` folder which will be read in `DataOptimisation_Automated_7params.R` when needed.
 The parameters estimated here are:-
 - iX: single trait intercept, representative of the population structure.
 - pX: poligencity of X (proportion of SNPs with an effect on trait X).
 - h2X: total heritabilities of X.
+
+### Step 3 : Run LHC-MR
 
 For the LHC-MR analysis, the script `DataOptimisation_Automated_7params.R` first reads in the summary stat files for the exposure (X) and outcome (Y). It then has the option to run LDSC using the `genomicSEM` R package and standardMR methods using the `TwoSampleMR` R package in order to obtain a cross trait intercept and causal effects that can be used as starting points for the likleihood optimisation. Random number sare generated if this step is skipped.
 Specific files are needed to run `genomicSEM`, and more details on abaining them can be found in the `data` folder above.
