@@ -66,7 +66,7 @@ The parameters estimated here are:-
 
 For the LHC-MR analysis, the script `DataOptimisation_Automated_7params.R` first reads in the summary stat files for the exposure (X) and outcome (Y). It then has the option to run LDSC using the `genomicSEM` R package and standardMR methods using the `TwoSampleMR` R package in order to obtain a cross trait intercept and causal effects that can be used as starting points for the likleihood optimisation. Random number sare generated if this step is skipped.
 Specific files are needed to run `genomicSEM`, and more details on abaining them can be found in the `data` folder above.
-The likelihood function is estimated with inputs including the sample sizes, the standardised effect sizes, the SNP-specific LD information (obtained from `LD_GM2_2prm.txt`), and the starting points.
+The likelihood function is estimated with inputs including the sample sizes, the standardised effect sizes, the SNP-specific LD information (obtained from [`LD_GM2_2prm.txt`](https://drive.google.com/file/d/1jN0N9VOnvrenBcb0cHxMzLJxi06D87jZ/view?usp=sharing)), and the starting points.
 7 unknown parameters are then estimated:-
 - tX, tY: confounder effect of X and Y.
 - alp, bet: causal effect of X->Y and Y->X.
