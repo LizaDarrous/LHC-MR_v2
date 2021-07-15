@@ -1,0 +1,12 @@
+Files needed to run LHC-MR
+
+- 'variants.tsv.bgz' obtained from Neale's UKBB GWAS Imputed v3 to merge variant information to variant details of the summary statistics files 
+https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/annotations/variants.tsv.bgz
+
+- 'LDscores.txt' You can either use the classical LD scores https://data.broadinstitute.org/alkesgroup/LDSCORE/ or the ones we have calculated based on UK10K 
+sequencing data https://drive.google.com/file/d/1uua6zIournPvcJAs-QVWs8pTUVLtZ5Ym/view?usp=sharing where the list of SNPs are optimised for UKB-based summary stats (e.g. by Neale)
+
+- 'LD_GM2_2prm.txt' Local LD for each genotyped SNP, this file contains the pi and sigma values needed 
+LINK
+
+- genomicSEM files needed to calculate the cross trait intercept obtained from LDSC run using genomicSEM
