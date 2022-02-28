@@ -1,7 +1,7 @@
 # LHC-MR_v2
 (Updated method)
 
-:warning: **These scripts are in the process of being made into an R-package. Thank you for your patience!**
+:warning: **These scripts have made into an R-package that can be found [HERE](https://github.com/LizaDarrous/lhcMR). This repo will remain up as it is cited in the LHC-MR [manuscript](https://www.nature.com/articles/s41467-021-26970-w).**
 
 Latent Heritable Confounder MR (LHC-MR) is a method applicable to association summary statistics, which estimates bi-directional causal effects, direct heritabilities, and confounder effects while accounting for sample overlap.
 LHC-MR extends the standard Mendelian Randomisation model to incorporate the presence of a latent (unmeasured) heritable confounder and estimates its contribution to the exposure and outcome traits, while simultaneously estimating the bi-directional causal effect between the two traits.
